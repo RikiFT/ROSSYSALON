@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rossy Salon | Dashboard Admin</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f7f7f7; }
+        .nav-shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Barra de Navegación -->
+    <nav class="bg-pink-600 nav-shadow">
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-white">Rossy Salon | Administración</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="mr-4 text-sm font-medium text-pink-100 hidden sm:inline">Hola, {{ session.get('nombre', 'Administradora') }}</span>
+                    <a href="{{ url_for('logout') }}" class="px-3 py-2 text-sm font-medium text-pink-600 bg-white rounded-lg hover:bg-pink-100 transition duration-150">
+                        Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <h1 class="mb-8 text-3xl font-bold text-gray-800">Panel de Control Global</h1>
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+
+            <!-- Tarjeta 1: Ingresos -->
+            <div class="p-6 bg-white rounded-lg shadow-xl">
+                <p class="text-sm font-medium text-gray-500">Ingresos del Mes</p>
+                <p class="mt-1 text-3xl font-bold text-green-600">$15,500.00</p>
+                <p class="mt-2 text-sm text-gray-500">Meta: $20,000.00</p>
+            </div>
+
+            <!-- Tarjeta 2: Citas Totales -->
+            <div class="p-6 bg-white rounded-lg shadow-xl">
+                <p class="text-sm font-medium text-gray-500">Citas Agendadas</p>
+                <p class="mt-1 text-3xl font-bold text-blue-600">320</p>
+                <p class="mt-2 text-sm text-gray-500">Esta Semana: +45</p>
+            </div>
+
+            <!-- Tarjeta 3: Productos Bajos -->
+            <div class="p-6 bg-white rounded-lg shadow-xl">
+                <p class="text-sm font-medium text-gray-500">Inventario Bajo</p>
+                <p class="mt-1 text-3xl font-bold text-red-600">8 Items</p>
+                <p class="mt-2 text-sm text-gray-500">Revisar stock urgente</p>
+            </div>
+
+            <!-- Tarjeta 4: Clientes Nuevos -->
+            <div class="p-6 bg-white rounded-lg shadow-xl">
+                <p class="text-sm font-medium text-gray-500">Nuevos Clientes</p>
+                <p class="mt-1 text-3xl font-bold text-yellow-600">12</p>
+                <p class="mt-2 text-sm text-gray-500">Mes anterior: 10</p>
+            </div>
+        </div>
+
+        <!-- Sección de Navegación Rápida -->
+        <div class="mt-10 p-6 bg-white rounded-lg shadow-xl">
+            <h2 class="mb-4 text-2xl font-semibold text-gray-800">Administración</h2>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <a href="#" class="block p-4 text-center text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition duration-150">
+                    Gestionar Personal
+                </a>
+                <a href="#" class="block p-4 text-center text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition duration-150">
+                    Catálogo de Servicios
+                </a>
+                <a href="#" class="block p-4 text-center text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition duration-150">
+                    Inventario y Productos
+                </a>
+                <a href="#" class="block p-4 text-center text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition duration-150">
+                    Reportes Financieros
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

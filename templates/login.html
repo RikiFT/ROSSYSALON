@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rossy Salon - Iniciar Sesión</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="w-full max-w-sm p-6 bg-white shadow-xl rounded-2xl border border-gray-100">
+
+        <!-- Logo/Título del Salón -->
+        <div class="text-center mb-6">
+            <!-- Usando un icono de tijeras para un toque de salón de belleza -->
+            <svg class="mx-auto w-10 h-10 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 10l-2 2m0 0l2 2m-2-2h8"></path>
+            </svg>
+            <h1 class="text-3xl font-bold text-gray-800 mt-2">Rossy Salon</h1>
+            <p class="text-gray-500 text-sm">Ingresa a tu cuenta</p>
+        </div>
+
+        <!-- Mensajes de Error/Éxito de Flask -->
+        {% if error %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative mb-4" role="alert">
+                <span class="block sm:inline">{{ error }}</span>
+            </div>
+        {% endif %}
+
+        <!-- Formulario de Inicio de Sesión -->
+        <form method="POST" action="{{ url_for('login') }}" class="space-y-4">
+            <div>
+                <label for="correo" class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+                <input type="email" id="correo" name="correo" required
+                       class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-pink-500 focus:border-pink-500"
+                       placeholder="ej. tu.email@ejemplo.com">
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                <!-- IMPORTANTE: Usamos type="password" para ocultar la entrada -->
+                <!-- Para clientes, el valor que ingresen aquí es su número de teléfono registrado -->
+                <input type="password" id="password" name="password" required
+                       class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-pink-500 focus:border-pink-500"
+                       placeholder="Tu clave de acceso">
+                <p class="text-xs text-gray-500 mt-1 italic">
+                </p>
+            </div>
+
+            <button type="submit"
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition duration-150 ease-in-out">
+                Iniciar Sesión
+            </button>
+        </form>
+
+        <!-- Enlace a Registro -->
+        <div class="mt-6 text-center">
+            <p class="text-sm text-gray-600">
+                ¿Aún no tienes cuenta?
+                <a href="{{ url_for('vista_registro') }}"
+                   class="font-medium text-pink-600 hover:text-pink-500 hover:underline transition duration-150 ease-in-out">
+                    Regístrate aquí
+                </a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

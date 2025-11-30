@@ -1,0 +1,179 @@
+/* ===============================
+   ESTILO GENERAL MINIMALISTA
+================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    background: #f9f9fb;
+    color: #333;
+}
+
+/* ===============================
+   LOGIN / REGISTRO
+================================= */
+
+.login-bg {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #efefef;
+}
+
+.login-box, .register-box {
+    width: 360px;
+    background: white;
+    padding: 35px 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    text-align: center;
+}
+
+.login-box h2, .register-box h2 {
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #111;
+}
+
+.login-box p, .register-box p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px 14px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1.3px solid #dcdcdc;
+    background: #fafafa;
+    transition: 0.2s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #6a11cb;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(106,17,203,0.15);
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: #6a11cb;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #540da3;
+}
+
+/* botón secundario */
+.link-btn {
+    background: #333;
+    margin-top: 10px;
+}
+
+.link-btn:hover {
+    background: #111;
+}
+
+/* ===============================
+   TOPBAR
+================================= */
+
+.topbar {
+    background: white;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+}
+
+.topbar h3 {
+    font-weight: 600;
+    color: #222;
+}
+
+.topbar nav a {
+    margin-left: 25px;
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.topbar nav a:hover {
+    color: #6a11cb;
+}
+
+/* ===============================
+   CONTENEDORES
+================================= */
+.container {
+    padding: 30px;
+}
+
+h2 {
+    margin-bottom: 10px;
+    color: #222;
+}
+
+/* Tarjetas minimalistas */
+.card {
+    background: white;
+    padding: 22px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    border: 1px solid #e5e5e5;
+    transition: 0.2s;
+}
+
+.card:hover {
+    border-color: #ccc;
+}
+
+/* Tablas minimalistas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+th {
+    background: #f0f0f0;
+    padding: 14px;
+    text-align: left;
+    font-weight: 600;
+}
+
+td {
+    padding: 14px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+td button {
+    width: auto;
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: #6a11cb;
+}
+
+td button:hover {
+    background: #4c0c95;
+}

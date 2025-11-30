@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recepción - Rossy Salón</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f3f1; /* Tono de fondo suave */
+        }
+        .bg-primary {
+            background-color: #F87171; /* Rojo/Rosa salmón */
+        }
+        .text-primary {
+            color: #F87171;
+        }
+        /* Estilo para resaltar el cliente seleccionado */
+        .cliente-seleccionado {
+            border-color: #F87171;
+            background-color: #ffebeb;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <header class="bg-primary shadow-lg p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-white">Rossy Salón | Recepción</h1>
+            <nav>
+                <span class="text-white mr-4">Hola, {{ session.get('nombre', 'Recepcionista') }}</span>
+                <a href="{{ url_for('logout') }}" class="text-white hover:text-gray-200 transition duration-150 p-2 rounded-lg border border-white hover:bg-white hover:text-primary">
+                    Cerrar Sesión
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="flex-grow max-w-7xl mx-auto p-4 md:p-8 w-full">
+
+        <!-- Mensajes de Éxito o Error -->
+        {% if error %}
+            <div role="alert" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4">
+                <p class="font-bold">Error:</p>
+                <p class="text-sm">{{ error }}</p>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div role="alert" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-4">
+                <p class="font-bold">Éxito:</p>
+                <p class="text-sm">{{ success }}</p>
+            </div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Columna de REGISTRO, BÚSQUEDA Y AGENDAMIENTO -->
+            <div class="lg:col-span-2 bg-white shadow-xl rounded-xl p-6 h-fit">
+                <h2 class="text-3xl font-extrabold text-gray-800 mb-6">
+                    Gestión de Citas y Clientes
+                </h2>
+
+                <!-- 0. Formulario de REGISTRO RÁPIDO de Cliente -->
+                <div class="mb-8 p-4 border border-blue-400 rounded-xl bg-blue-50">
+                    <h3 class="text-xl font-semibold text-blue-700 mb-3 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                        Registro Rápido de Cliente Nuevo
+                    </h3>
+                    <form action="{{ url_for('registrar_cliente_recepcion') }}" method="post" class="space-y-3">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <input type="text" name="nombre_registro" placeholder="Nombre Completo"
+                                   class="p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                            <input type="tel" name="telefono_registro" placeholder="Teléfono"
+                                   class="p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                            <input type="email" name="correo_registro" placeholder="Correo Electrónico"
+                                   class="p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <button type="submit"
+                                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition duration-300 shadow-md">
+                            REGISTRAR Y SELECCIONAR
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 1. Formulario de Búsqueda de Cliente -->
+                <div class="mb-8 p-4 border border-gray-200 rounded-xl">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-3">Buscar Cliente Existente</h3>
+                    <form action="{{ url_for('buscar_cliente') }}" method="post" class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                        <input type="text" name="termino_busqueda" placeholder="Nombre o Teléfono del Cliente"
+                               class="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" required>
+                        <button type="submit"
+                                class="bg-primary hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 shadow-md">
+                            Buscar
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 2. RESULTADOS DE LA BÚSQUEDA (Muestra la info completa del cliente) -->
+                {% if clientes_encontrados %}
+                    <div class="mb-8 p-4 border-l-4 border-primary bg-red-50 rounded-xl">
+                        <h3 class="text-xl font-semibold text-primary mb-3">
+                            Resultados de la Búsqueda ({{ clientes_encontrados | length }} encontrados)
+                        </h3>
+                        <div class="space-y-3">
+                            {% for cliente in clientes_encontrados %}
+                                <!--
+                                    La consulta devuelve una tupla con 5 elementos:
+                                    0: IDCliente
+                                    1: Nombre
+                                    2: Telefono
+                                    3: Correo
+                                    4: FechaRegistro (que es tipo date/datetime)
+                                -->
+                                <div class="p-4 border border-gray-200 rounded-lg shadow-sm flex flex-col md:flex-row md:justify-between items-start md:items-center
+                                            {% if cliente[0] == id_cliente_seleccionado %} cliente-seleccionado border-2 border-primary {% endif %}">
+
+                                    <!-- Detalles del Cliente -->
+                                    <div class="flex-1 min-w-0 mb-2 md:mb-0">
+                                        <p class="text-lg font-bold text-gray-800">{{ cliente[1] }}</p>
+                                        <p class="text-sm text-gray-600">Teléfono: {{ cliente[2] }}</p>
+                                        <p class="text-sm text-gray-600 truncate">Correo: {{ cliente[3] }}</p>
+                                        <!-- FORMATO DE FECHA MEJORADO: Usamos strftime para mostrar solo la fecha si es un objeto datetime/date -->
+                                        <p class="text-xs text-gray-400 mt-1">
+                                            Registrado desde:
+                                        {{ cliente[4] if cliente[4] else 'N/A' }}
+
+                                    </div>
+
+                                    <!-- Botón de Selección -->
+                                    {% if cliente[0] != id_cliente_seleccionado %}
+                                        <a href="{{ url_for('seleccionar_cliente', id_cliente=cliente[0], nombre_cliente=cliente[1]) }}"
+                                           class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded-lg transition duration-300 text-sm mt-2 md:mt-0">
+                                            Seleccionar
+                                        </a>
+                                    {% else %}
+                                        <span class="text-sm text-primary font-bold border border-primary px-3 py-1 rounded-lg mt-2 md:mt-0">
+                                            Seleccionado
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- 3. Formulario de Agendamiento de Cita -->
+                <div class="p-4 border border-gray-200 rounded-xl bg-gray-50">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-3">Datos de la Cita</h3>
+
+                    {% if id_cliente_seleccionado %}
+                        <p class="mb-4 text-lg font-bold text-primary border border-primary p-2 rounded-lg bg-white">
+                            Cliente Seleccionado: {{ nombre_cliente_seleccionado }} (ID: {{ id_cliente_seleccionado }})
+                        </p>
+                    {% else %}
+                         <p class="text-gray-500 italic p-2 border border-dashed rounded-lg mb-4">
+                            Busca o registra un cliente para poder agendar una cita.
+                        </p>
+                    {% endif %}
+
+                    <form action="{{ url_for('agendar_cita_recepcion') }}" method="post" class="space-y-4" {% if not id_cliente_seleccionado %} onsubmit="return false;" {% endif %}>
+
+                        <!-- 1. Servicio -->
+                        <div class="flex flex-col">
+                            <label for="id_servicio" class="text-sm font-medium text-gray-700">Servicio:</label>
+                            <select id="id_servicio" name="id_servicio"
+                                    class="p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" required {% if not id_cliente_seleccionado %} disabled {% endif %}>
+                                <option value="" disabled selected>Selecciona un servicio</option>
+                                {% for id_servicio, nombre in servicios %}
+                                    <option value="{{ id_servicio }}">{{ nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- 2. Estilista -->
+                        <div class="flex flex-col">
+                            <label for="id_estilista" class="text-sm font-medium text-gray-700">Estilista:</label>
+                            <select id="id_estilista" name="id_estilista"
+                                    class="p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" required {% if not id_cliente_seleccionado %} disabled {% endif %}>
+                                <option value="" disabled selected>Selecciona un estilista</option>
+                                {% for id_estilista, nombre in estilistas %}
+                                    <option value="{{ id_estilista }}">{{ nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- 3. Fecha y Hora -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex flex-col">
+                                <label for="fecha" class="text-sm font-medium text-gray-700">Fecha:</label>
+                                <input type="date" id="fecha" name="fecha" value="{{ fecha_hoy }}" min="{{ fecha_hoy }}"
+                                       class="p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" required {% if not id_cliente_seleccionado %} disabled {% endif %}>
+                            </div>
+                            <div class="flex flex-col">
+                                <label for="hora" class="text-sm font-medium text-gray-700">Hora:</label>
+                                <select id="hora" name="hora"
+                                        class="p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" required {% if not id_cliente_seleccionado %} disabled {% endif %}>
+                                    <option value="" disabled selected>Selecciona hora</option>
+                                    {% for hora_24, hora_ampm in horas %}
+                                        <option value="{{ hora_24 }}">{{ hora_ampm }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Botón de Agendar -->
+                        <button type="submit"
+                                class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition duration-300 shadow-lg
+                                       {% if not id_cliente_seleccionado %} opacity-50 cursor-not-allowed {% endif %}"
+                                {% if not id_cliente_seleccionado %} disabled {% endif %}>
+                            AGENDAR CITA
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Columna de AGENDA DEL DÍA -->
+            <div class="lg:col-span-1 bg-white shadow-xl rounded-xl p-6 h-fit">
+                <h2 class="text-2xl font-extrabold text-gray-800 mb-4">
+                    Agenda de Hoy (<span class="text-primary">{{ fecha_hoy }}</span>)
+                </h2>
+
+                <!-- Lista de Citas -->
+                {% if citas_hoy %}
+                    <div class="space-y-4">
+                        {% for cita in citas_hoy %}
+                            <!--
+                                La consulta SELECT devuelve un tupla con estos índices:
+                                0: IDCita
+                                1: Hora
+                                2: Estado
+                                3: Cliente
+                                4: NombreServicio
+                                5: Estilista
+                            -->
+                            <div class="border-l-4 p-4 rounded-lg shadow-md
+                                        {% if cita[2] == 'Pendiente' %}
+                                            border-yellow-500 bg-yellow-50
+                                        {% elif cita[2] == 'Realizada' %}
+                                            border-green-500 bg-green-50
+                                        {% else %}
+                                            border-gray-500 bg-gray-100
+                                        {% endif %}">
+                                <p class="text-xl font-bold text-gray-800">{{ cita[1] }}</p>
+                                <p class="text-sm text-gray-700">Cliente: {{ cita[3] }}</p>
+                                <p class="text-sm text-gray-700">Servicio: {{ cita[4] }}</p>
+                                <p class="text-sm text-gray-700 mb-2">Estilista: {{ cita[5] }}</p>
+                                <span class="text-xs font-bold px-2 py-0.5 rounded
+                                    {% if cita[2] == 'Pendiente' %} bg-yellow-300 text-yellow-800
+                                    {% elif cita[2] == 'Realizada' %} bg-green-300 text-green-800
+                                    {% else %} bg-gray-300 text-gray-800
+                                    {% endif %}
+                                ">{{ cita[2] }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500 italic p-4 border border-dashed rounded-xl">
+                        No hay citas agendadas para hoy.
+                    </p>
+                {% endif %}
+            </div>
+
+        </div>
+    </main>
+</body>
+</html>

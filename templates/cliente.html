@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Cliente - Rossy Salon</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f3f0; }
+        .card { background-color: white; border-radius: 1rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+        .btn-primary { background-color: #d9466c; color: white; transition: background-color 0.3s; }
+        .btn-primary:hover { background-color: #c03b5a; }
+        .input-style { border-color: #e5e7eb; border-radius: 0.5rem; }
+        .header-bg { background-color: #e8a8b8; }
+        .logo-text { color: #d9466c; font-weight: 700; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header con navegación y logo -->
+    <header class="header-bg p-4 shadow-md">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-3xl logo-text">Rossy Salon - Cliente</h1>
+            <div class="flex items-center space-x-4">
+                <span class="text-white text-lg font-semibold">{{ session.get('nombre', 'Usuario') }}</span>
+                <a href="{{ url_for('logout') }}" class="btn-primary py-2 px-4 rounded-lg text-sm font-medium hover:bg-red-600">
+                    Cerrar Sesión
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto p-6 w-full">
+
+        <!-- Mensajes de Éxito/Error -->
+        {% if success %}
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-6" role="alert">
+            <p class="font-bold">Éxito</p>
+            <p class="text-sm">{{ success }}</p>
+        </div>
+        {% endif %}
+        {% if error %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-6" role="alert">
+            <p class="font-bold">Error</p>
+            <p class="text-sm">{{ error }}</p>
+        </div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- 1. Formulario de Agendamiento de Cita -->
+            <div class="lg:col-span-1 card p-6">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-3">Agendar Nueva Cita</h2>
+
+                <form action="{{ url_for('agendar_cita') }}" method="POST" class="space-y-4">
+
+                    <div>
+                        <label for="id_servicio" class="block text-sm font-medium text-gray-700 mb-1">Servicio</label>
+                        <select id="id_servicio" name="id_servicio" required class="input-style w-full p-2.5 focus:ring-pink-500 focus:border-pink-500">
+                            <option value="">Selecciona un servicio</option>
+                            {% for servicio in servicios %}
+                            <!-- servicio[0]=IDServicio, servicio[1]=NombreServicio, servicio[2]=Precio -->
+                            <option value="{{ servicio[0] }}">{{ servicio[1] }} - ${{ servicio[2] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="id_estilista" class="block text-sm font-medium text-gray-700 mb-1">Estilista Preferido</label>
+                        <select id="id_estilista" name="id_estilista" required class="input-style w-full p-2.5 focus:ring-pink-500 focus:border-pink-500">
+                            <option value="">Cualquiera</option>
+                            {% for estilista in estilistas %}
+                            <!-- CAMBIO CRÍTICO: Muestra Nombre y Especialidad -->
+                            <!-- estilista[0]=IDEstilista, estilista[1]=Nombre, estilista[2]=Especialidad -->
+                            <option value="{{ estilista[0] }}">{{ estilista[1] }} ({{ estilista[2] }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="fecha" class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+                        <input type="date" id="fecha" name="fecha" required
+                               class="input-style w-full p-2.5" min="{{ fecha_hoy }}">
+                    </div>
+
+                    <div>
+                        <label for="hora" class="block text-sm font-medium text-gray-700 mb-1">Hora</label>
+                        <select id="hora" name="hora" required class="input-style w-full p-2.5 focus:ring-pink-500 focus:border-pink-500">
+                            <option value="">Selecciona la hora</option>
+                            {% for hora_24, hora_ampm in horas %}
+                            <option value="{{ hora_24 }}">{{ hora_ampm }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary w-full py-3 rounded-lg font-semibold">Confirmar Cita</button>
+                </form>
+            </div>
+
+            <!-- 2. Historial de Citas y Lista de Servicios -->
+            <div class="lg:col-span-2 space-y-8">
+
+                <!-- Historial de Citas -->
+                <div class="card p-6">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-3">Mis Próximas Citas y Historial</h2>
+
+                    {% if citas_cliente %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Servicio</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estilista</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for cita in citas_cliente %}
+                                <tr class="hover:bg-pink-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ cita[0] }}</td> <!-- Fecha -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ cita[1].strftime('%I:%M %p').lstrip('0') }}</td> <!-- Hora -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ cita[3] }}</td> <!-- Servicio -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ cita[4] }}</td> <!-- Estilista -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        {% if cita[2] == 'Pendiente' %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            {{ cita[2] }}
+                                        </span>
+                                        {% elif cita[2] == 'Realizada' %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            {{ cita[2] }}
+                                        </span>
+                                        {% else %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                            {{ cita[2] }}
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-gray-500 italic">Aún no tienes citas agendadas.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Lista de Servicios y Precios -->
+                <div class="card p-6">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-3">Lista de Servicios y Precios</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for servicio in servicios %}
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium text-gray-900">{{ servicio[1] }}</span>
+                            <span class="text-lg font-semibold text-pink-600">${{ servicio[2] }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+</body>
+</html>
